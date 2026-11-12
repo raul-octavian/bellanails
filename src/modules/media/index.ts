@@ -26,6 +26,7 @@ export { getReleaseRequestForToken } from "./release-reads"
 export { getPublicAssetsBySurface, type PublicAsset } from "./public-assets"
 export {
   getGalleryPreviewItems,
+  getPublicGalleryItems,
   type GalleryPreviewItem,
 } from "./gallery-preview"
 

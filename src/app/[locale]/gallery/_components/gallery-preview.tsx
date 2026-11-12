@@ -1,13 +1,14 @@
 import { getTranslations } from "next-intl/server"
 
 import { Link } from "@/i18n/navigation"
-import { StudioGallery } from "@/components/gallery/studio-gallery"
 import { ClientWorkSection } from "@/components/gallery/client-work-section"
 import { Container, Section } from "@/components/layout/container"
 import { Button } from "@/components/ui/button"
 import { PageHeader } from "@/components/ui/page-header"
 import { BodySm } from "@/components/ui/typography"
 import { getPublicAssetsBySurface } from "@/modules/media/public-assets"
+import { getPublicGalleryItems } from "@/modules/media/gallery-preview"
+import { StudioGalleryGrid } from "./studio-gallery-grid"
 import { routes } from "@/config/routes"
 
 const CLIENT_WORK_LIMIT = 48
@@ -17,11 +18,13 @@ const CLIENT_WORK_LIMIT = 48
     it lands. The "portfolio on its way" note only shows while no client work
     has been placed yet, so the page never contradicts itself. */
 export async function GalleryPreview() {
-  const [t, clientWork] = await Promise.all([
+  const [t, studioItems, clientWork] = await Promise.all([
     getTranslations("gallery"),
+    getPublicGalleryItems(),
     getPublicAssetsBySurface("clients_gallery", CLIENT_WORK_LIMIT),
   ])
   const hasClientWork = clientWork.length > 0
+  const hasStudioWork = studioItems.length > 0
 
   return (
     <>
@@ -35,7 +38,7 @@ export async function GalleryPreview() {
           />
         </Container>
       </Section>
-      <StudioGallery />
+      <StudioGalleryGrid items={studioItems} />
 
       {hasClientWork ? (
         <ClientWorkSection
@@ -48,13 +51,15 @@ export async function GalleryPreview() {
       ) : null}
 
       {/* Book CTA always shows; the "portfolio on its way" note only while the
-          client-work grid is empty (otherwise it would contradict it). */}
-      <Section className={hasClientWork ? undefined : "pt-0"}>
+          gallery is empty (otherwise it would contradict it). */}
+      <Section
+        className={hasStudioWork || hasClientWork ? undefined : "pt-0"}
+      >
         <Container className="max-w-4xl">
           <div className="space-y-6">
-            {hasClientWork ? null : (
+            {!hasStudioWork && !hasClientWork ? (
               <BodySm className="max-w-md">{t("comingSoon")}</BodySm>
-            )}
+            ) : null}
             <Button nativeButton={false} render={<Link href={routes.book} />}>
               {t("bookCta")}
             </Button>

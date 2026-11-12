@@ -77,3 +77,23 @@ function toStudioGalleryImage(row: GalleryItemRow): StudioGalleryImage {
     slot: row.sort_order,
   }
 }
+
+/**
+ * Every gallery item the public may see — featured (slotted) ones first in
+ * slot order, then gallery-page-only images newest first. Items whose asset
+ * copy is gone are skipped, so the public never lands on a broken image; the
+ * admin manager keeps showing those (unfiltered) so they can be taken down.
+ */
+export async function getPublicGalleryItems(
+  db: Db = createSupabaseServerClient(),
+): Promise<StudioGalleryImage[]> {
+  const rows = await listGalleryItems(db)
+
+  return rows.filter(hasAssetUrl).map(toStudioGalleryImage)
+}
+
+function hasAssetUrl(
+  row: GalleryItemRow,
+): row is GalleryItemRow & { asset_url: string } {
+  return row.asset_url != null
+}
