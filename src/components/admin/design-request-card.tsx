@@ -142,9 +142,17 @@ export function DesignRequestCard({
       <ul className="space-y-2">
         {request.messages.map((message) => (
           <li key={message.id} className="text-sm">
-            <span className="font-functional text-xs uppercase tracking-widest-lux text-muted-foreground">
-              {message.author === "artist" ? "You" : clientName}
-            </span>
+            <div className="flex items-center justify-between">
+              <span className="font-functional text-xs uppercase tracking-widest-lux text-muted-foreground">
+                {message.author === "artist" ? "You" : clientName}
+              </span>
+              <span className="font-functional text-[0.625rem] uppercase tracking-widest-lux text-muted-foreground">
+                {formatStudioDayMonthYear(
+                  Date.parse(message.createdAt),
+                  ADMIN_LOCALE,
+                )}
+              </span>
+            </div>
             <p className="mt-0.5 whitespace-pre-wrap text-foreground">
               {message.body}
             </p>

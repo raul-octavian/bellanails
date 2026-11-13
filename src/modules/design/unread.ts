@@ -1,5 +1,8 @@
 import type { Db } from "@/db/client"
-import { listDesignReplyMarkersForClient } from "@/db/design-requests"
+import {
+  getUnreadDesignRequestForClient as getUnreadDesignRequestRow,
+  listDesignReplyMarkersForClient,
+} from "@/db/design-requests"
 import { isDesignThreadUnread } from "@/shared/design"
 
 /**
@@ -20,3 +23,21 @@ export async function unreadStudioReplyCount(
     isDesignThreadUnread(m.client_seen_at, m.last_artist_reply_at),
   ).length
 }
+
+/** The most recent thread a client hasn't read yet — its id, so the banner can
+    link straight to it instead of a tab. Returns null when nothing is unread. */
+export async function getUnreadDesignRequestForClient(
+  db: Db,
+  clientId: string,
+): Promise<{ id: string } | null> {
+  const row = await getUnreadDesignRequestRow(db, clientId)
+  if (!row) {
+    return null
+  }
+  if (isDesignThreadUnread(row.client_seen_at, row.last_artist_reply_at)) {
+    return { id: row.id }
+  }
+
+  return null
+}
+

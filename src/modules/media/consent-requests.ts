@@ -1,6 +1,10 @@
 import type { Db } from "@/db/client"
 import { countRequestedFor as countRequestedDataConsents } from "@/db/client-consents"
-import { countRequestedReleasesForClient } from "@/db/media-releases"
+import { getPendingDataConsentForClient } from "@/db/client-consents"
+import {
+  countRequestedReleasesForClient,
+  getPendingReleaseForClient,
+} from "@/db/media-releases"
 
 /**
  * Count of requests awaiting the client's decision (media releases + data-use).
@@ -20,3 +24,27 @@ export async function pendingRequestCount(
 
   return media + data
 }
+
+/** The most recent pending consent request for this client — its id plus a
+    tag saying whether it's a media release or a data consent, so the banner
+    can link straight to it instead of a tab. Returns null when nothing is
+    pending. Client-safe under RLS. */
+export async function getPendingConsentRequestForClient(
+  db: Db,
+  clientId: string,
+): Promise<{ id: string; kind: "release" | "data_consent" } | null> {
+  const [release, dataConsent] = await Promise.all([
+    getPendingReleaseForClient(db, clientId),
+    getPendingDataConsentForClient(db, clientId),
+  ])
+
+  if (release) {
+    return { id: release.id, kind: "release" }
+  }
+  if (dataConsent) {
+    return { id: dataConsent.id, kind: "data_consent" }
+  }
+
+  return null
+}
+

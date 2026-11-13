@@ -142,6 +142,23 @@ export async function countRequestedReleasesForClient(
   return count ?? 0
 }
 
+/** The most recent pending media release for this client — its id, so the
+    banner can link straight to it instead of a tab. Client-safe under RLS. */
+export async function getPendingReleaseForClient(
+  db: Db,
+  clientId: string,
+): Promise<{ id: string } | null> {
+  const { data } = await db
+    .from("media_releases")
+    .select("id")
+    .eq("client_id", clientId)
+    .eq("status", "requested")
+    .order("requested_at", { ascending: false })
+    .limit(1)
+
+  return data?.[0] ?? null
+}
+
 export type ReleaseUpsert = Insert<"media_releases">
 
 /** Request a release (owner) — upsert on (booking_id, purpose), resetting prior

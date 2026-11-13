@@ -98,6 +98,28 @@ export async function countActionableDesignRequestsForClient(
   return count ?? 0
 }
 
+/** The most recent thread a client hasn't read yet — id + the two timestamps,
+    so the caller can compare them and link straight to it instead of a tab.
+    Client-safe: the browser banner runs this under RLS. */
+export async function getUnreadDesignRequestForClient(
+  db: Db,
+  clientId: string,
+): Promise<{
+  id: string
+  client_seen_at: string | null
+  last_artist_reply_at: string
+} | null> {
+  const { data } = await db
+    .from("design_requests")
+    .select("id, client_seen_at, last_artist_reply_at")
+    .eq("client_id", clientId)
+    .not("last_artist_reply_at", "is", null)
+    .order("last_artist_reply_at", { ascending: false })
+    .limit(1)
+
+  return data?.[0] ?? null
+}
+
 /** Rows a client might have an unread studio answer on — the two timestamps
     only, so the caller can compare them (PostgREST can't compare two columns).
     Client-safe: the browser banner runs this under RLS. */

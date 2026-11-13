@@ -50,6 +50,23 @@ export async function countRequestedFor(
   return count ?? 0
 }
 
+/** The most recent pending data consent for this client — its id, so the
+    banner can link straight to it instead of a tab. Client-safe under RLS. */
+export async function getPendingDataConsentForClient(
+  db: Db,
+  clientId: string,
+): Promise<{ id: string } | null> {
+  const { data } = await db
+    .from("client_consents")
+    .select("id")
+    .eq("client_id", clientId)
+    .eq("status", "requested")
+    .order("requested_at", { ascending: false })
+    .limit(1)
+
+  return data?.[0] ?? null
+}
+
 export async function updateDataConsent(
   db: Db,
   consentId: string,

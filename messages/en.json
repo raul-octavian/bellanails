@@ -630,7 +630,13 @@
     "offerHolds": "Holds until {date}",
     "threadHeading": "Conversation",
     "closedNote": "This conversation is closed. Start a new one whenever you like.",
-    "photosHeading": "Your photos"
+    "photosHeading": "Your photos",
+    "backToMySpace": "Back to My Space",
+    "pageTitle": "Request",
+    "pageEyebrow": "Ask Bella",
+    "pageLead": "Your request",
+    "topicHeading": "Topic",
+    "askNewCta": "Ask something new"
   },
   "testimonialForm": {
     "errLink": "This link isn\u2019t valid.",

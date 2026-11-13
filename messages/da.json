@@ -630,7 +630,13 @@
     "offerHolds": "Gælder til {date}",
     "threadHeading": "Samtale",
     "closedNote": "Denne samtale er lukket. Start gerne en ny, når du vil.",
-    "photosHeading": "Dine billeder"
+    "photosHeading": "Dine billeder",
+    "backToMySpace": "Tilbage til Min Side",
+    "pageTitle": "Forespørgsel",
+    "pageEyebrow": "Spørg Bella",
+    "pageLead": "Din forespørgsel",
+    "topicHeading": "Emne",
+    "askNewCta": "Spørg om noget nyt"
   },
   "testimonialForm": {
     "errLink": "Linket er ikke gyldigt.",

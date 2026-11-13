@@ -96,6 +96,12 @@ export function offerPath(token: string): string {
   return `/offer/${token}`
 }
 
+/** One client's design request thread, in isolation — no My Space shell
+    (segment must match app/[locale]/requests/[id]). */
+export function requestPath(id: string): string {
+  return `/requests/${encodeURIComponent(id)}`
+}
+
 /** One client's testimonial invitation, by its signed token (segment must match
     app/[locale]/testimonial/[token]). */
 export function testimonialPath(token: string): string {

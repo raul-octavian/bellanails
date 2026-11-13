@@ -196,11 +196,19 @@ export async function DesignRequestList({
                 <ul className="space-y-3">
                   {request.messages.map((message) => (
                     <li key={message.id} className="text-sm">
-                      <span className="font-functional text-xs uppercase tracking-widest-lux text-muted-foreground">
-                        {message.author === "artist"
-                          ? t("authorArtist")
-                          : t("authorClient")}
-                      </span>
+                      <div className="flex items-center justify-between">
+                        <span className="font-functional text-xs uppercase tracking-widest-lux text-muted-foreground">
+                          {message.author === "artist"
+                            ? t("authorArtist")
+                            : t("authorClient")}
+                        </span>
+                        <span className="font-functional text-[0.625rem] uppercase tracking-widest-lux text-muted-foreground">
+                          {formatStudioDayMonthYear(
+                            Date.parse(message.createdAt),
+                            locale,
+                          )}
+                        </span>
+                      </div>
                       <p className="mt-0.5 whitespace-pre-wrap text-foreground">
                         {message.body}
                       </p>
