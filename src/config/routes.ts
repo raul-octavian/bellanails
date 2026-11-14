@@ -102,6 +102,11 @@ export function requestPath(id: string): string {
   return `/requests/${encodeURIComponent(id)}`
 }
 
+/** One client's consent / media share request in isolation (app/[locale]/requests/consent/[id]). */
+export function requestConsentPath(id: string): string {
+  return `/requests/consent/${encodeURIComponent(id)}`
+}
+
 /** One client's testimonial invitation, by its signed token (segment must match
     app/[locale]/testimonial/[token]). */
 export function testimonialPath(token: string): string {

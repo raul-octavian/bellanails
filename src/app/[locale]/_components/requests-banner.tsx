@@ -8,10 +8,13 @@ import {
   getUnreadDesignRequestForClient,
   unreadStudioReplyCount,
 } from "@/modules/design/unread"
-import { pendingRequestCount } from "@/modules/media/consent-requests"
+import {
+  getPendingConsentRequestForClient,
+  pendingRequestCount,
+} from "@/modules/media/consent-requests"
 import { useCurrentUser } from "@/hooks/use-current-user"
 import { useSupabaseBrowserClient } from "@/platform/supabase/client"
-import { routes, requestPath } from "@/config/routes"
+import { routes, requestPath, requestConsentPath } from "@/config/routes"
 
 /**
  * What is waiting for a client, at the top of the home page: pending consent
@@ -30,6 +33,11 @@ export function RequestsBanner() {
   const { data: count = 0 } = useQuery({
     queryKey: ["pending-requests", clientId],
     queryFn: () => pendingRequestCount(supabase, clientId!),
+    enabled: Boolean(clientId),
+  })
+  const { data: pendingConsent } = useQuery({
+    queryKey: ["pending-consent-request", clientId],
+    queryFn: () => getPendingConsentRequestForClient(supabase, clientId!),
     enabled: Boolean(clientId),
   })
   const { data: replies = 0 } = useQuery({
@@ -61,7 +69,11 @@ export function RequestsBanner() {
       ) : null}
       {count > 0 ? (
         <AttentionBanner
-          href={{ pathname: routes.appointments, query: { tab: "permissions" } }}
+          href={
+            pendingConsent
+              ? requestConsentPath(pendingConsent.id)
+              : { pathname: routes.appointments, query: { tab: "permissions" } }
+          }
           className={bannerBar}
           text={t("requestBanner", { count })}
           tap={tap}

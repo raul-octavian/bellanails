@@ -104,3 +104,22 @@ export async function upsertDataConsent(
 
   return { ok: !error }
 }
+
+/** One consent row, scoped to the client who owns it — used to authorize a
+    client opening a consent request by id. The service key bypasses RLS, so
+    the caller must still match client_id in the query; the page is never the
+    authorization boundary. */
+export async function getClientConsentRowByIdAndClient(
+  db: Db,
+  id: string,
+  clientId: string,
+): Promise<Pick<Row<"client_consents">, "id" | "client_id"> | null> {
+  const { data } = await db
+    .from("client_consents")
+    .select("id, client_id")
+    .eq("id", id)
+    .eq("client_id", clientId)
+    .maybeSingle()
+
+  return data ?? null
+}

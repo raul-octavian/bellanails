@@ -1,7 +1,8 @@
 import "server-only"
 
+import { getClientConsentRowByIdAndClient } from "@/db/client-consents"
 import { listBookingLabelsByIds } from "@/db/bookings"
-import { listReleasesForBookings } from "@/db/media-releases"
+import { getReleaseRowByIdAndClient, listReleasesForBookings } from "@/db/media-releases"
 import { verifyBookingToken } from "@/modules/booking/manage-token"
 import { createSupabaseServiceRoleClient } from "@/platform/supabase/server"
 import { metaOf } from "@/shared/booking-policy"
@@ -43,4 +44,32 @@ export async function getReleaseRequestForToken(
       status: r.status as ReleaseState,
     })),
   )
+}
+
+/** Resolve one consent request id to what it is and who it owns — used by the
+    client's consent-request page. The service key bypasses RLS, so every query
+    re-checks client_id; the page is never the authorization boundary. */
+export async function getConsentRequest(
+  id: string,
+  clientId: string,
+): Promise<
+  | { kind: "release"; bookingId: string }
+  | { kind: "data_consent" }
+  | null
+> {
+  const db = createSupabaseServiceRoleClient()
+
+  const [release, consent] = await Promise.all([
+    getReleaseRowByIdAndClient(db, id, clientId),
+    getClientConsentRowByIdAndClient(db, id, clientId),
+  ])
+
+  if (release) {
+    return { kind: "release", bookingId: release.booking_id }
+  }
+  if (consent) {
+    return { kind: "data_consent" }
+  }
+
+  return null
 }

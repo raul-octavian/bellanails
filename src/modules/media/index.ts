@@ -22,7 +22,7 @@ export {
   type HubUsage,
 } from "./asset-hub"
 export { pendingRequestCount } from "./consent-requests"
-export { getReleaseRequestForToken } from "./release-reads"
+export { getConsentRequest, getReleaseRequestForToken } from "./release-reads"
 export { getPublicAssetsBySurface, type PublicAsset } from "./public-assets"
 export {
   getGalleryPreviewItems,

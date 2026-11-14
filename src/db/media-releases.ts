@@ -196,3 +196,40 @@ export async function updateRelease(
 
   return error ? { ok: false, message: error.message } : { ok: true }
 }
+
+export async function getReleaseRowById(
+  db: Db,
+  id: string,
+): Promise<Pick<Row<"media_releases">, "id" | "client_id" | "booking_id" | "status"> | null> {
+  const { data } = await db
+    .from("media_releases")
+    .select("id, client_id, booking_id, status")
+    .eq("id", id)
+    .maybeSingle()
+
+  return data ?? null
+}
+
+/** One release row, scoped to the client who owns it — used to authorize a
+    client opening a consent request by id. The service key bypasses RLS, so
+    the caller must still match client_id in the query; the page is never the
+    authorization boundary. */
+export async function getReleaseRowByIdAndClient(
+  db: Db,
+  id: string,
+  clientId: string,
+): Promise<
+  Pick<
+    Row<"media_releases">,
+    "id" | "client_id" | "booking_id" | "status"
+  > | null
+> {
+  const { data } = await db
+    .from("media_releases")
+    .select("id, client_id, booking_id, status")
+    .eq("id", id)
+    .eq("client_id", clientId)
+    .maybeSingle()
+
+  return data ?? null
+}
